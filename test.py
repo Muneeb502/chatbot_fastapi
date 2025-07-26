@@ -200,7 +200,7 @@ Assistant Response:"""
         return str(result)
 
 # Instantiate chatbot (singleton)
-chatbot = RAGChatbot("indusmedical.pdf")
+chatbot = RAGChatbot("data.pdf")
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
