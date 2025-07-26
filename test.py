@@ -6,17 +6,24 @@ from typing import List, Dict, Optional
 from dotenv import load_dotenv
 
 
+
+
 # LangChain imports
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain_groq import ChatGroq
 
+
+
+
 # Load environment variables
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+
 
 # FastAPI app
 app = FastAPI()
@@ -28,13 +35,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
+
 # Request/Response models
 class ChatRequest(BaseModel):
     message: str
     history: Optional[List[Dict[str, str]]] = None
 
+
 class ChatResponse(BaseModel):
     response: str
+
 
 # Load PDF and build vectorstore (cache in memory)
 class RAGChatbot:
@@ -46,6 +58,8 @@ class RAGChatbot:
         self.retriever = self.vstore.as_retriever(search_kwargs={"k": 4})
         self.llm = ChatGroq(model="meta-llama/llama-4-scout-17b-16e-instruct", temperature=0.3)
 
+
+
     def format_history(self, history):
         if not history:
             return ""
@@ -55,9 +69,11 @@ class RAGChatbot:
             lines.append(f"{role}: {msg['content']}")
         return "\n".join(lines)
 
+
     def get_context(self, query: str):
         docs = self.retriever.get_relevant_documents(query)
         return "\n\n".join(doc.page_content for doc in docs)
+
 
     def build_prompt(self, query: str, context: str, history: str):
         return f"""
@@ -83,8 +99,11 @@ Assistant Response:"""
             return result.content
         return str(result)
 
+
 # Instantiate chatbot (singleton)
 chatbot = RAGChatbot("data.pdf")
+
+
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
@@ -93,3 +112,5 @@ async def chat_endpoint(request: ChatRequest):
     except Exception as e:
         answer = f"Sorry, an error occurred: {e}"
     return ChatResponse(response=answer) 
+
+
