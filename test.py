@@ -120,6 +120,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 from dotenv import load_dotenv
+import uvicorn
+
 
 
 # LangChain imports
@@ -211,5 +213,4 @@ async def chat_endpoint(request: ChatRequest):
     return ChatResponse(response=answer)
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
